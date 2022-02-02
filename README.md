@@ -1,23 +1,22 @@
-yants
-=====
+# yants
 
 This is a tiny type-checker for data in Nix, written in Nix.
 
 # Features
 
-* Checking of primitive types (`int`, `string` etc.)
-* Checking polymorphic types (`option`, `list`, `either`)
-* Defining & checking struct/record types
-* Defining & matching enum types
-* Defining & matching sum types
-* Defining function signatures (including curried functions)
-* Types are composable! `option string`! `list (either int (option float))`!
-* Type errors also compose!
+- Checking of primitive types (`int`, `string` etc.)
+- Checking polymorphic types (`option`, `list`, `either`)
+- Defining & checking struct/record types
+- Defining & matching enum types
+- Defining & matching sum types
+- Defining function signatures (including curried functions)
+- Types are composable! `option string`! `list (either int (option float))`!
+- Type errors also compose!
 
 Currently lacking:
 
-* Any kind of inference
-* Convenient syntax for attribute-set function signatures
+- Any kind of inference
+- Convenient syntax for attribute-set function signatures
 
 ## Primitives & simple polymorphism
 
@@ -45,36 +44,38 @@ Yants can be imported from its `default.nix`. A single attribute (`lib`) can be
 passed, which will otherwise be imported from `<nixpkgs>`.
 
 TIP: You do not need to clone my whole repository to use Yants! It is split out
-into the `nix/yants` branch which you can clone with, for example, `git clone -b
-nix/yants https://git.tazj.in yants`.
+into the `nix/yants` branch which you can clone with, for example, `git clone -b nix/yants https://git.tazj.in yants`.
 
 Examples for the most common import methods would be:
 
 1. Import into scope with `with`:
-    ```nix
-    with (import ./default.nix {});
-    # ... Nix code that uses yants ...
-    ```
+
+   ```nix
+   with (import ./default.nix {});
+   # ... Nix code that uses yants ...
+   ```
 
 2. Import as a named variable:
-    ```nix
-    let yants = import ./default.nix {};
-    in yants.string "foo" # or other uses ...
-    ````
+
+   ```nix
+   let yants = import ./default.nix {};
+   in yants.string "foo" # or other uses ...
+   ```
 
 3. Overlay into `pkgs.lib`:
-    ```nix
-    # wherever you import your package set (e.g. from <nixpkgs>):
-    import <nixpkgs> {
-      overlays = [
-        (self: super: {
-          lib = super.lib // { yants = import ./default.nix { inherit (super) lib; }; };
-        })
-      ];
-    }
 
-    # yants now lives at lib.yants, besides the other library functions!
-    ```
+   ```nix
+   # wherever you import your package set (e.g. from <nixpkgs>):
+   import <nixpkgs> {
+     overlays = [
+       (self: super: {
+         lib = super.lib // { yants = import ./default.nix { inherit (super) lib; }; };
+       })
+     ];
+   }
+
+   # yants now lives at lib.yants, besides the other library functions!
+   ```
 
 Please see my [Nix one-pager](https://github.com/tazjin/nix-1p) for more generic
 information about the Nix language and what the above constructs mean.
@@ -86,4 +87,3 @@ should continue to do so even if used at an older version.
 
 Yants' tests use Nix versions above 2.2 - compatibility with older versions is
 not guaranteed.
-
