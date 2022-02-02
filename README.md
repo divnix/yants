@@ -21,23 +21,23 @@ Currently lacking:
 
 ## Primitives & simple polymorphism
 
-![simple](/about/nix/yants/screenshots/simple.png)
+![simple](screenshots/simple.png)
 
 ## Structs
 
-![structs](/about/nix/yants/screenshots/structs.png)
+![structs](screenshots/structs.png)
 
 ## Nested structs!
 
-![nested structs](/about/nix/yants/screenshots/nested-structs.png)
+![nested structs](screenshots/nested-structs.png)
 
 ## Enums!
 
-![enums](/about/nix/yants/screenshots/enums.png)
+![enums](screenshots/enums.png)
 
 ## Functions!
 
-![functions](/about/nix/yants/screenshots/functions.png)
+![functions](screenshots/functions.png)
 
 # Usage
 
