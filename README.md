@@ -40,41 +40,29 @@ Currently lacking:
 
 # Usage
 
-Yants can be imported from its `default.nix`. A single attribute (`lib`) can be
-passed, which will otherwise be imported from `<nixpkgs>`.
-
-TIP: You do not need to clone my whole repository to use Yants! It is split out
-into the `nix/yants` branch which you can clone with, for example, `git clone -b nix/yants https://git.tazj.in yants`.
-
-Examples for the most common import methods would be:
-
 1. Import into scope with `with`:
 
    ```nix
-   with (import ./default.nix {});
-   # ... Nix code that uses yants ...
-   ```
-
-2. Import as a named variable:
-
-   ```nix
-   let yants = import ./default.nix {};
-   in yants.string "foo" # or other uses ...
-   ```
-
-3. Overlay into `pkgs.lib`:
-
-   ```nix
-   # wherever you import your package set (e.g. from <nixpkgs>):
-   import <nixpkgs> {
-     overlays = [
-       (self: super: {
-         lib = super.lib // { yants = import ./default.nix { inherit (super) lib; }; };
-       })
-     ];
+   {
+     inputs.yants.url = "github:divnix/yants";
+     outputs = inputs: {
+       someType = with inputs.yants; # code using yants
+     };
    }
+   ```
 
-   # yants now lives at lib.yants, besides the other library functions!
+2. Import into scope and add log context:
+
+   ```nix
+   {
+     inputs.yants.url = "github:divnix/yants";
+     outputs = inputs: let
+       rootLogYants = inputs.yants "my-lib";
+       leafLogYants = rootLogYants "leaf";
+     in {
+       someType = with leafLogYants; # code using yants
+     };
+   }
    ```
 
 Please see my [Nix one-pager](https://github.com/tazjin/nix-1p) for more generic
@@ -85,5 +73,5 @@ information about the Nix language and what the above constructs mean.
 The current API of Yants is **not yet** considered stable, but it works fine and
 should continue to do so even if used at an older version.
 
-Yants' tests use Nix versions above 2.2 - compatibility with older versions is
+Yants' tests use Nix versions above 2.6 - compatibility with older versions is
 not guaranteed.
