@@ -141,6 +141,28 @@
               isFunction x
               || (isAttrs x && x ? "__functor" && isFunction x.__functor)
             );
+            functionWithArgs =
+              args:
+              let
+                args' = (self.attrs self.bool) args;
+              in
+                typedef' rec {
+                  name = "function";
+                  checkType =
+                    x:
+                    let
+                      # only lib.trivial.functionArgs does support __functor
+                      realArgs = lib.trivial.functionArgs (self.function x);
+                    in
+                      {
+                        ok = realArgs == args';
+                        err = "expected type ${name} with arguments and specification of defaults (yes/no) ${
+                          prettyPrint args'
+                        }, but arguments and defaults do not conform: ${
+                          prettyPrint realArgs
+                        }";
+                      };
+                };
             # Type for types themselves. Useful when defining polymorphic types.
             type = typedef "type" (
               x:
