@@ -134,11 +134,7 @@
                 realArgs = lib.trivial.functionArgs (self.function x);
               in {
                 ok = realArgs == args';
-                err = "expected type ${name} with arguments and specification of defaults (yes/no) ${
-                  prettyPrint args'
-                }, but arguments and defaults do not conform: ${
-                  prettyPrint realArgs
-                }";
+                err = "expected ${prettyPrint (lib.trivial.setFunctionArgs lib.id args')}, but arguments and/or defaults do not conform: ${prettyPrint (self.function x)}";
               };
             };
           # Type for types themselves. Useful when defining polymorphic types.
