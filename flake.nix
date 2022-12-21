@@ -231,7 +231,7 @@
                   };
               # checkStruct combines all structure checks and creates one
               # typecheck result from them
-              checkStruct = def: value: let
+              checkStruct = isClosed: def: value: let
                 init = {
                   ok = true;
                   err = "";
@@ -259,15 +259,15 @@
                   init
                   checkedFields;
               in {
-                ok = combined.ok && extraneous.ok;
-                err = combined.err + extraneous.err;
+                ok = combined.ok && (if isClosed then extraneous.ok else true);
+                err = combined.err + (if isClosed then extraneous.err else "");
               };
-              struct' = name: def:
+              struct' = name: isClosed: def:
                 typedef' {
                   inherit name def;
                   checkType = value:
                     if isAttrs value
-                    then (checkStruct (self.attrs self.type def) value)
+                    then (checkStruct isClosed (self.attrs self.type def) value)
                     else {
                       ok = false;
                       err = typeError name value;
@@ -278,8 +278,12 @@
             in
               arg:
                 if isString arg
-                then (struct' arg)
-                else (struct' "anon" arg);
+                then sarg:
+                  if isBool sarg then struct' arg sarg else struct' arg true sarg
+                else
+                  if isAttrs arg
+                    then struct' "anon" true arg
+                    else struct' "anon" arg;
           # Enums & pattern matching
           enum = let
             plain = name: def:
