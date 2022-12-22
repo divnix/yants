@@ -198,7 +198,7 @@
           # Anonymous structs are supported (e.g. for nesting) by omitting the
           # name.
           #
-          inherit (import ./struct.nix {inherit self typedef';}) struct openStruct;
+          inherit (import ./struct.nix {inherit self typedef' typeError;}) struct openStruct;
 
           enum = let
             plain = name: def:
