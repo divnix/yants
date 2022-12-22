@@ -1,4 +1,4 @@
-{self, typedef'}:
+{self, typedef', typeError}:
 # Struct checking is more involved than the simpler types above.
 # To make the actual type definition more readable, several
 # helpers are defined below.
