@@ -11,7 +11,20 @@
   outputs = inputs:
     with builtins; let
       lib = inputs.nixpkgs.lib;
-      prettyPrint = lib.generators.toPretty {};
+      prettyPrintFunctor = lib.generators.toPretty {};
+      prettyPrint = val: let
+        val' =
+          if lib.isAttrs val && lib.hasAttr "__functor" val
+          then {
+            __pretty = val: let
+              set = prettyPrint (builtins.removeAttrs val ["__functor"]);
+              functor = prettyPrintFunctor val.__functor;
+            in "${set} with __functor = ${functor}";
+            inherit val;
+          }
+          else val;
+      in
+        lib.generators.toPretty {allowPrettyValues = true;} val';
       throw' = self: message:
         if self ? logContext && self.logContext != null
         then throw "[${self.logContext}]: ${message}"
@@ -134,7 +147,7 @@
                 realArgs = lib.trivial.functionArgs (self.function x);
               in {
                 ok = realArgs == args';
-                err = "expected ${prettyPrint (lib.trivial.setFunctionArgs lib.id args')}, but arguments and/or defaults do not conform: ${prettyPrint (self.function x)}";
+                err = "expected ${prettyPrintFunctor (lib.trivial.setFunctionArgs lib.id args')}, but arguments and/or defaults do not conform: ${prettyPrintFunctor (self.function x)}";
               };
             };
           # Type for types themselves. Useful when defining polymorphic types.
