@@ -179,7 +179,28 @@
               };
             };
           eitherN = tn:
-            typedef "either<${concatStringsSep ", " (map (x: x.name) tn)}>" (x: any (t: (self.type t).check x) tn);
+            let
+              combine = a: b: if a == null then b else "[${a}]: ${b}";
+              logContexts = map (t: t.logContext or null) tn;
+              # Function to pair two lists, combining their corresponding elements
+              pairList = listA: listB: lib.lists.zipListsWith combine listA listB;
+            in
+            _typedef' null rec {
+              name = "either<${concatStringsSep ", " (map (x: x.name) tn)}>";
+              checkType = x: let
+                results = map (t: t.checkType x) tn;
+                allErrors = filter (r: !r.ok) results;
+                errorMsgs = map (r: r.err) allErrors;
+                formatError = err: "expected type '${name}', but found:\n" + err;
+              in
+                if any (r: r.ok) results
+                then { ok = true; }
+                else {
+                  ok = false;
+                  err = concatStringsSep "\n" (pairList logContexts (map formatError errorMsgs));
+                };
+            };
+
           either = t1: t2: self.eitherN [t1 t2];
           list = t:
             typedef' rec {
